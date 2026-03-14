@@ -1,0 +1,13 @@
+Sample Login credential 
+
+For Admin
+Email: admin@gmail.com
+Pass: Asdf@123
+
+For Buyer
+Email: buyer@gmail.com
+Pass: Asdf@123
+
+For Seller
+Email: seller@gmail.com
+Pass: Asdf@123
