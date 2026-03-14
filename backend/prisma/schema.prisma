@@ -1,0 +1,110 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id                String    @id @default(cuid())
+  name              String
+  email             String    @unique
+  is_email_verified Boolean   @default(false)
+  verify_code       String?
+  password          String
+  role              Role      @default(BUYER)
+  is_active         Boolean   @default(true)
+  is_blocked        Boolean   @default(false)
+  remarks           String?
+  products          Product[]
+  orders            Order[]   @relation("BuyerOrders")
+  sessions          Session[] @relation("UserSessions")
+  is_deleted        Boolean   @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([email])
+}
+
+model Session {
+  sessionId     String   @id @default(cuid())
+  user          User     @relation("UserSessions", fields: [userId], references: [id], onDelete: Cascade)
+  userId        String
+  refresh_token String
+  expiresAt     DateTime
+  userAgent     String?
+  ipAddress     String?
+  remarks       String?
+  is_deleted    Boolean  @default(false)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@unique([userId, refresh_token])
+  @@index([refresh_token])
+}
+
+model Product {
+  id      String  @id @default(cuid())
+  title   String
+  niche   String
+  price   Float
+  metrics String?
+
+  sellerId String
+  seller   User   @relation(fields: [sellerId], references: [id], onDelete: Cascade)
+
+  assets ProductAssets[]
+
+  orders     Order[]
+  is_deleted Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model ProductAssets {
+  id        String @id @default(cuid())
+  productId String
+  assetUrl  String
+  publicId  String
+  position  Int    @default(0)
+
+  product    Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  is_deleted Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Order {
+  id      String @id @default(cuid())
+  buyerId String
+
+  buyer     User    @relation("BuyerOrders", fields: [buyerId], references: [id], onDelete: Cascade)
+  price     Float
+  quantity  Int     @default(1)
+  productId String
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  status     OrderStatus @default(PENDING)
+  is_deleted Boolean     @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+enum Role {
+  BUYER
+  SELLER
+  ADMIN
+}
+
+enum OrderStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  COMPLETED
+}
