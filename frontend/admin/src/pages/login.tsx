@@ -53,6 +53,8 @@ const LoginPage = () => {
       }
       const payload = decryptPayload(res.data)
       localStorage.setItem('username', payload?.user?.name || 'Guest');
+      localStorage.setItem('access_token', payload?.access_token || '');
+      localStorage.setItem('refresh_token', payload?.refresh_token || '');
       toast.success("Login successful!");
       window.location.href = redirectTo;
     } catch (error: any) {

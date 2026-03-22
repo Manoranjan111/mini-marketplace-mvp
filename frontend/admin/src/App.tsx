@@ -11,7 +11,7 @@ import Buyer from './pages/buyer';
 
 function App() {
   const [isLoggedIn] = useState(() => {
-    return !!Cookies.get('refresh_token');
+    return !!Cookies.get('refresh_token') || !!localStorage.getItem("refresh_token");
   });
 
   return (

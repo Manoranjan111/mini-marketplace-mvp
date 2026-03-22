@@ -9,7 +9,7 @@ import ProfilePage from './pages/profile';
 
 function App() {
   const [isLoggedIn] = useState(() => {
-    return !!Cookies.get('refresh_token');
+    return !!Cookies.get('refresh_token') || !!localStorage.getItem("refresh_token");
   });
 
   return (

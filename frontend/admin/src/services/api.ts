@@ -1,5 +1,5 @@
-import { decryptPayload } from "@/lib/utils";
 import axios from "axios";
+import { decryptPayload } from "@/lib/utils";
 
 const BASE_URL = import.meta.env.VITE_API_URL;
 const axiosInstance = axios.create({
@@ -10,6 +10,19 @@ const axiosInstance = axios.create({
   },
   withCredentials: true,
 });
+
+axiosInstance.interceptors.request.use(
+  async (config) => {
+    const access_token = localStorage.getItem("access_token") || "";
+    const refresh_token = localStorage.getItem("refresh_token") || "";
+    config.headers["Authorization"] = `Bearer ${access_token}`;
+    config.headers["x-refresh-token"] = `${refresh_token}`;
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  },
+);
 
 let isRefreshing = false;
 let failedQueue: any[] = [];
@@ -55,10 +68,14 @@ axiosInstance.interceptors.response.use(
         const newAccessToken = payload.access_token;
         processQueue(null, newAccessToken);
         originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
+        localStorage.setItem("access_token", payload?.access_token || "");
+        localStorage.setItem("refresh_token", payload?.refresh_token || "");
         return axiosInstance(originalRequest);
       } catch (refreshError) {
         processQueue(refreshError, null);
         console.error("Token refresh failed:", refreshError);
+        localStorage.removeItem("access_token");
+        localStorage.removeItem("refresh_token");
         window.location.href = "/";
         return Promise.reject(refreshError);
       } finally {

@@ -5,7 +5,7 @@ import { toast } from "react-toastify";
 
 function Navbar() {
   const [isLoggedIn, setIsLoggedIn] = useState(() => {
-    return !!Cookies.get('refresh_token');
+    return !!Cookies.get('refresh_token') || !!localStorage.getItem("refresh_token");
   });
 
   const handleLogout = async () => {
@@ -18,6 +18,8 @@ function Navbar() {
       }
       toast.success(res.message || "Logged out successfully");
       setIsLoggedIn(false);
+      localStorage.removeItem("access_token");
+      localStorage.removeItem("refresh_token");
       window.location.href = '/';
     } catch (error: any) {
       const errorMessage = error.response?.data || error.message;
