@@ -6,7 +6,7 @@ import { toast } from "react-toastify";
 function Navbar() {
   const [cart, setCart] = useState<any[]>([])
   const [isLoggedIn, setIsLoggedIn] = useState(() => {
-    return !!Cookies.get('refresh_token') || !!localStorage.getItem("refresh_token");;
+    return !!Cookies.get('refresh_token') || !!localStorage.getItem("refresh_token");
   });
 
   useEffect(() => {

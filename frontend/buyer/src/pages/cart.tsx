@@ -12,7 +12,7 @@ export default function CartPage() {
   const [loading, setLoading] = useState(false)
   const [cart, setCart] = useState<any[]>([])
   const [isLoggedIn] = useState(() => {
-    return !!Cookies.get('refresh_token');
+    return !!Cookies.get('refresh_token') || !!localStorage.getItem("refresh_token");
   });
 
   useEffect(() => {
